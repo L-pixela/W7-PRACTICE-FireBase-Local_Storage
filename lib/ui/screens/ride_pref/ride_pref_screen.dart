@@ -32,7 +32,7 @@ class RidePrefScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final prefProvider = context.read<RidesPreferenceProvider>();
+    final prefProvider = context.watch<RidesPreferenceProvider>();
     RidePreference? currentRidePreference = prefProvider.currentPreference;
     List<RidePreference> pastPreferences = prefProvider.getPastPreferences();
 
