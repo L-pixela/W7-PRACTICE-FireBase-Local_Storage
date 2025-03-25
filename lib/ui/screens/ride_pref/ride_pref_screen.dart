@@ -64,7 +64,7 @@ class RidePrefScreen extends StatelessWidget {
                   RidePrefForm(
                     initialPreference: currentRidePreference,
                     onSubmit: (preference) {
-                      onRidePrefSelected(currentRidePreference!, context);
+                      onRidePrefSelected(preference, context);
                     },
                   ),
                   SizedBox(height: BlaSpacings.m),

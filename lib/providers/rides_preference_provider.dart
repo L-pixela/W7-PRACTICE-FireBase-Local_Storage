@@ -14,13 +14,13 @@ class RidesPreferenceProvider extends ChangeNotifier {
   RidesPreferenceProvider({required this.repository});
 
   RidePreference? get currentPreference {
-    print("Get current pref: $_currentPreference");
+    // print("Get current pref: $_currentPreference");
     return _currentPreference;
   }
 
   void setCurrentPreference(RidePreference preference) {
     if (_currentPreference != preference) {
-      print("Set current pref to $_currentPreference");
+      // print("Set current pref to $_currentPreference");
       _currentPreference = preference;
       addPreference(preference);
       repository.addPreference(preference);
@@ -34,6 +34,6 @@ class RidesPreferenceProvider extends ChangeNotifier {
   }
 
   List<RidePreference> getPastPreferences() {
-    return pastPreference;
+    return pastPreference.reversed.toList();
   }
 }
