@@ -12,7 +12,10 @@ class RidesPreferenceProvider extends ChangeNotifier {
 
   RidePreference? _currentPreference;
 
-  RidesPreferenceProvider({required this.repository});
+  RidesPreferenceProvider({required this.repository}) {
+    pastPreference = AsyncValue.loading();
+    fetchPastPreferences();
+  }
 
   RidePreference? get currentPreference {
     // print("Get current pref: $_currentPreference");

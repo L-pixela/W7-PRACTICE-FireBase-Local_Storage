@@ -88,12 +88,16 @@ class RidePrefScreen extends StatelessWidget {
 
     switch (ridePrefValue.state) {
       case AsyncValueState.loading:
-        return CircularProgressIndicator();
+        return Center(child: CircularProgressIndicator());
 
       case AsyncValueState.error:
         return Text('Error: ${ridePrefValue.error}');
 
       case AsyncValueState.success:
+        if (ridePrefValue.data == null || ridePrefValue.data!.isEmpty) {
+          return Center(child: Text("No past preferences found."));
+        }
+
         return ListView.builder(
           shrinkWrap: true, // Fix ListView height issue
           physics: AlwaysScrollableScrollPhysics(),
