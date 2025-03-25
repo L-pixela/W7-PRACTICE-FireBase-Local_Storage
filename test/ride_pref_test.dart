@@ -1,19 +1,21 @@
+import 'package:flutter_test/flutter_test.dart';
 import 'package:week_3_blabla_project/dummy_data/dummy_data.dart';
 import 'package:week_3_blabla_project/model/ride/ride_pref.dart';
-import 'package:week_3_blabla_project/providers/rides_preference_provider.dart';
-import 'package:week_3_blabla_project/repository/mock/mock_ride_preferences_repository.dart';
-import 'package:week_3_blabla_project/repository/ride_preferences_repository.dart';
+import 'package:week_3_blabla_project/ui/providers/rides_preference_provider.dart';
+import 'package:week_3_blabla_project/data/repository/mock/mock_ride_preferences_repository.dart';
+import 'package:week_3_blabla_project/data/repository/ride_preferences_repository.dart';
 
 void main() {
-  // 1. Verify mock repository implementation
-  final RidePreferencesRepository mockRepo = MockRidePreferencesRepository();
+  test('RidesPreferenceProvider Test', () async {
+    // 1. Verify mock Repo implementation
+    final RidePreferencesRepository mockRepo = MockRidePreferencesRepository();
 
-  // 2. Initialize provider
-  final provider = RidesPreferenceProvider(repository: mockRepo);
+    // 2. Initialize the Provider
+    final provider = RidesPreferenceProvider(repository: mockRepo);
 
-  try {
-    // Verify dummy data existence
-    assert(fakeLocations.length >= 4, "Need at least 4 fake locations");
+    // Initialize some dummy data
+    expect(fakeLocations.length, greaterThan(4),
+        reason: "Need at least 4 fake locations");
 
     final cookie = RidePreference(
       departure: fakeLocations[0],
@@ -22,22 +24,25 @@ void main() {
       requestedSeats: 2,
     );
 
-    // Test 1: Initial state
-    print(
-        "Initial Current Preference: ${provider.currentPreference}"); // Should be null
+    // 3. Test the initial state
+    expect(provider.currentPreference, isNull,
+        reason: "Should Be Null As no setting for the current ridesPref Yet");
 
-    // Test 2: Set preference
+    // 4. Set the Current RidePref
     provider.setCurrentPreference(cookie);
-    print("After Setting: ${provider.currentPreference}");
+    await Future.delayed(const Duration(microseconds: 500)); //Wait for Update
 
-    // Test 3: Verify repository interaction
-    assert(mockRepo.getPastPreferences().contains(cookie),
-        "Preference not saved to repository");
+    expect(provider.currentPreference, equals(cookie),
+        reason: "Current Preferences was not Uploaded");
 
-    // Test 4: Verify past preferences
-    print(
-        "Past Preferences Count: ${provider.getPastPreferences().length}"); // Should be 1
-  } catch (e) {
-    print("Test failed: $e");
-  }
+    // 5. Verify repository interaction & past preferences
+    await provider.fetchPastPreferences();
+    await Future.delayed(const Duration(microseconds: 500)); //Wait for Update
+
+    expect(provider.pastPreference.data, isNotNull,
+        reason: "Past Preferences should not be null");
+
+    expect(provider.pastPreference.data, contains(cookie),
+        reason: "Preference was not saved in past preferences");
+  });
 }

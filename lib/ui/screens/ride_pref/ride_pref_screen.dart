@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:week_3_blabla_project/providers/rides_preference_provider.dart';
+import 'package:week_3_blabla_project/ui/providers/async_value.dart';
+import 'package:week_3_blabla_project/ui/providers/rides_preference_provider.dart';
 
 import '../../../model/ride/ride_pref.dart';
 import '../../theme/theme.dart';
@@ -34,7 +35,6 @@ class RidePrefScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final prefProvider = context.watch<RidesPreferenceProvider>();
     RidePreference? currentRidePreference = prefProvider.currentPreference;
-    List<RidePreference> pastPreferences = prefProvider.getPastPreferences();
 
     return Stack(
       children: [
@@ -71,18 +71,8 @@ class RidePrefScreen extends StatelessWidget {
 
                   // 2.2 Optionally display a list of past preferences
                   SizedBox(
-                    height: 200, // Set a fixed height
-                    child: ListView.builder(
-                      shrinkWrap: true, // Fix ListView height issue
-                      physics: AlwaysScrollableScrollPhysics(),
-                      itemCount: pastPreferences.length,
-                      itemBuilder: (ctx, index) => RidePrefHistoryTile(
-                        ridePref: pastPreferences[index],
-                        onPressed: () =>
-                            onRidePrefSelected(pastPreferences[index], context),
-                      ),
-                    ),
-                  ),
+                      height: 200, // Set a fixed height
+                      child: _buildPastRidePrefListView(prefProvider, context)),
                 ],
               ),
             ),
@@ -90,6 +80,31 @@ class RidePrefScreen extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  Widget _buildPastRidePrefListView(
+      RidesPreferenceProvider provider, BuildContext context) {
+    final ridePrefValue = provider.pastPreference;
+
+    switch (ridePrefValue.state) {
+      case AsyncValueState.loading:
+        return CircularProgressIndicator();
+
+      case AsyncValueState.error:
+        return Text('Error: ${ridePrefValue.error}');
+
+      case AsyncValueState.success:
+        return ListView.builder(
+          shrinkWrap: true, // Fix ListView height issue
+          physics: AlwaysScrollableScrollPhysics(),
+          itemCount: ridePrefValue.data!.length,
+          itemBuilder: (ctx, index) => RidePrefHistoryTile(
+            ridePref: ridePrefValue.data![index],
+            onPressed: () =>
+                onRidePrefSelected(ridePrefValue.data![index], context),
+          ),
+        );
+    }
   }
 }
 
